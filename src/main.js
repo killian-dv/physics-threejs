@@ -52,6 +52,20 @@ const environmentMapTexture = cubeTextureLoader.load([
 ]);
 
 /**
+ * Sounds
+ */
+const hitSound = new Audio("/sounds/hit.mp3");
+
+const playHitSound = (collision) => {
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+  if (impactStrength > 0.5) {
+    hitSound.volume = Math.min(impactStrength * 0.2, 1);
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
+
+/**
  * Physics
  */
 const world = new CANNON.World();
@@ -199,6 +213,7 @@ const createSphere = (radius, position) => {
     material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   // save to array
@@ -237,6 +252,7 @@ const createBox = (width, height, depth, position) => {
     material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   // save to array
